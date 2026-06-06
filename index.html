@@ -1,147 +1,417 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Eclipse Nexus OS</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Eclipse Nexus OS v1.0 — Cyberpunk Browser OS (MVP)</title>
+  <style>
+    :root{
+      --bg:#050816;
+      --primary:#00f0ff;
+      --secondary:#ff007f;
+      --glass: rgba(255,255,255,0.04);
+      --glass-strong: rgba(255,255,255,0.06);
+      --text:#c0f7ff;
+      --muted:#6b7686;
+      --monospace: 'Courier New', Courier, monospace;
+    }
+    body{ margin:0; min-height:100vh; background:linear-gradient(180deg,#040511 0%, #050816 60%); color:var(--text); font-family:var(--monospace); background-color:var(--bg); }
+    .pro-mode{ --primary:var(--secondary); }
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #050816;
-  color: #00f0ff;
-  overflow: hidden;
-}
+    /* Layout */
+    .app{ display:flex; align-items:center; justify-content:center; height:100vh; }
+    .panel{ width:720px; max-width:95vw; min-height:480px; background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:20px; box-shadow:0 10px 50px rgba(0,0,0,0.6), 0 0 30px var(--primary); backdrop-filter: blur(6px); position:relative; overflow:hidden; }
 
-/* Screens */
-.screen {
-  display: none;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
+    h1{ margin:0; font-size:18px; letter-spacing:1px; color:var(--primary); text-shadow:0 0 12px var(--primary); }
+    .muted{ color:var(--muted); font-size:12px }
 
-.active {
-  display: flex;
-}
+    /* Boot */
+    .boot-screen{ display:flex; flex-direction:column; gap:16px; align-items:center; justify-content:center; height:100%; }
+    .boot-line{ font-size:14px; color:var(--primary); text-shadow:0 0 8px var(--primary); }
+    .progress{ width:60%; height:14px; background:rgba(255,255,255,0.02); border-radius:8px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.6); }
+    .progress .fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--primary),var(--secondary)); box-shadow:0 0 18px var(--primary); }
 
-/* Neon text */
-h1 {
-  text-shadow: 0 0 15px #00f0ff;
-}
+    /* Login */
+    .login-center{ display:flex; align-items:center; justify-content:center; height:100%; }
+    .login-card{ width:420px; padding:28px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 8px 40px rgba(0,0,0,0.6); backdrop-filter: blur(6px); text-align:center; }
+    .holo{ color:var(--primary); text-shadow:0 0 18px var(--primary); font-size:20px; margin-bottom:12px }
+    .input{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(0,0,0,0.35); color:var(--text); box-shadow:0 4px 24px rgba(0,0,0,0.6), 0 0 18px rgba(0,0,0,0.6) inset; font-family:var(--monospace); margin-bottom:12px }
+    .btn{ padding:10px 14px; border-radius:8px; border:none; cursor:pointer; background:linear-gradient(90deg,var(--primary),var(--secondary)); color:#001; font-weight:700; box-shadow:0 6px 30px rgba(0,0,0,0.6), 0 0 22px var(--primary); }
+    .btn:active{ transform:translateY(1px) }
 
-/* Buttons */
-button {
-  background: #00f0ff;
-  border: none;
-  padding: 10px 15px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-weight: bold;
-}
+    /* Desktop */
+    .desktop{ display:flex; flex-direction:column; height:100%; }
+    .workspace{ flex:1; display:flex; align-items:center; justify-content:center; gap:18px; }
+    .card{ width:320px; padding:16px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.03); box-shadow:0 8px 40px rgba(0,0,0,0.6); backdrop-filter: blur(6px); }
 
-input {
-  padding: 10px;
-  margin-top: 10px;
-}
-</style>
+    /* Taskbar */
+    .taskbar{ position:absolute; bottom:12px; left:12px; right:12px; height:64px; display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-radius:10px; background:linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 24px var(--primary); }
+    .task-left{ display:flex; gap:12px; align-items:center }
+    .operator{ font-weight:700; color:var(--primary); text-shadow:0 0 10px var(--primary); }
+    .xp-bubble{ background:rgba(255,255,255,0.02); padding:6px 10px; border-radius:6px; color:var(--text); border:1px solid rgba(255,255,255,0.03) }
+    .task-right{ display:flex; gap:8px; align-items:center }
+    .small-btn{ padding:8px 10px; border-radius:8px; border:none; cursor:pointer; background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.04); }
+
+    /* Game */
+    .game-container{ display:flex; gap:12px; align-items:flex-start; }
+    canvas{ background:linear-gradient(180deg,#001 0%, #00151a 100%); border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 30px var(--primary); }
+    .hud{ color:var(--primary); font-size:14px }
+
+    /* Utilities */
+    .center{ display:flex; align-items:center; justify-content:center }
+    .hidden{ display:none }
+    .footer-note{ position:absolute; right:20px; bottom:18px; color:var(--muted); font-size:11px }
+
+    @media (max-width:720px){ .panel{ padding:12px } .progress{ width:80% } }
+  </style>
 </head>
-
 <body>
-
-<!-- BOOT -->
-<div id="boot" class="screen active">
-  <h1>BOOTING ECLIPSE NEXUS OS</h1>
-  <p>Initializing system...</p>
-</div>
-
-<!-- LOGIN -->
-<div id="login" class="screen">
-  <h1>LOGIN</h1>
-  <input id="user" placeholder="Enter username">
-  <button onclick="login()">Enter OS</button>
-</div>
-
-<!-- DESKTOP -->
-<div id="desktop" class="screen">
-  <h1>ECLIPSE NEXUS DESKTOP</h1>
-
-  <div style="margin-bottom:10px;">
-    SYSTEM STATUS: ONLINE ⚡
+  <div class="app">
+    <div class="panel" id="app">
+      <!-- app UI injected by JS -->
+    </div>
   </div>
+  <script>
+    // State machine
+    const state = {
+      mode: 'boot', // boot | login | desktop | game
+      user: { username:'', xp:0, pro:false }
+    };
 
-  <p id="welcome"></p>
+    // Helpers
+    const $ = (sel,root=document) => root.querySelector(sel);
+    const app = $('#app');
 
-  <button onclick="openGame()">Game Center</button>
-  <button onclick="upgrade()">Upgrade to PRO (₦1000)</button>
-</div>
+    // Storage keys
+    const STORAGE_KEY = 'nexus_user';
 
-<!-- GAME -->
-<div id="game" class="screen">
-  <h1>NEON RUNNER</h1>
-  <p>Game coming next update...</p>
-  <button onclick="back()">Back</button>
-</div>
+    // Boot sequence
+    document.addEventListener('DOMContentLoaded', ()=>{
+      render();
+      runBoot();
+    });
 
-<script>
+    function runBoot(){
+      state.mode = 'boot';
+      render();
+      const duration = 2500; // exactly 2500ms
+      const start = performance.now();
+      const fillEl = $('.progress .fill');
 
-let user = JSON.parse(localStorage.getItem("user")) || { name:"", pro:false };
+      function easeCubicBezierY(t, y1=0.0, y2=1.0){
+        // approximate cubic-bezier(0.4,0,0.2,1) using y control points
+        // control points: (0,0),(0.4,0),(0.2,1),(1,1)
+        // simple cubic bezier y(t) with given y1,y2
+        const inv = 1-t;
+        return 3*inv*inv*t*0 + 3*inv*t*t*1 + t*t*t; // simplified because first cp y=0, second cp y=1
+      }
 
-// HIDE ALL
-function hideAll(){
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-}
+      function tick(now){
+        const elapsed = now - start;
+        let p = Math.min(1, elapsed / duration);
+        // approximate desired easing using cubic bezier sample; for our chosen control points we craft a function
+        // We'll map p through a bezier-like ease curve roughly matching cubic-bezier(0.4,0,0.2,1)
+        const eased = cubicBezierEase(p);
+        fillEl.style.width = (eased*100) + '%';
+        if(elapsed < duration){
+          requestAnimationFrame(tick);
+        } else {
+          // after boot, check storage and route
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if(!raw){
+            state.mode = 'login';
+          } else {
+            try{ state.user = JSON.parse(raw) }catch(e){ localStorage.removeItem(STORAGE_KEY); state.user = {username:'',xp:0,pro:false} }
+            state.mode = 'desktop';
+            if(state.user.pro) document.body.classList.add('pro-mode'); else document.body.classList.remove('pro-mode');
+          }
+          render();
+        }
+      }
 
-// BOOT SYSTEM
-setTimeout(() => {
-  hideAll();
+      requestAnimationFrame(tick);
+    }
 
-  if(user.name){
-    showDesktop();
-  } else {
-    document.getElementById("login").classList.add("active");
-  }
-}, 2000);
+    function cubicBezierEase(t){
+      // numeric approximation of cubic-bezier(0.4,0,0.2,1)
+      // We'll use De Casteljau's algorithm sampling y coordinate where control points are (0,0),(0.4,0),(0.2,1),(1,1)
+      // Because bezier param t maps to x unevenly, this is an approximation but suitable for smoothness requirement.
+      const x1=0.4,y1=0,x2=0.2,y2=1;
+      // We'll simply compute y(t) with these control Y's
+      const inv = 1-t;
+      const y = 3*inv*inv*t*y1 + 3*inv*t*t*y2 + t*t*t; // endpoints 0 and 1 yield final term
+      return y;
+    }
 
-// LOGIN
-function login(){
-  let name = document.getElementById("user").value;
-  if(!name) return;
+    // Render system that checks state.mode before drawing
+    function render(){
+      // Always re-check mode and render appropriate UI
+      app.innerHTML = '';
+      if(state.mode === 'boot'){
+        app.innerHTML = `
+          <div class="boot-screen">
+            <div class="boot-line">BOOTING ECLIPSE NEXUS OS v1.0...</div>
+            <div class="progress"><div class="fill"></div></div>
+            <div class="muted">Initializing core subsystems...</div>
+          </div>
+        `;
+      } else if(state.mode === 'login'){
+        app.innerHTML = `
+          <div class="login-center">
+            <div class="login-card">
+              <div class="holo">WELCOME OPERATOR</div>
+              <div class="muted">Enter your operator handle (max 15 chars)</div>
+              <input id="username" maxlength="15" class="input" placeholder="Operator ID" />
+              <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+                <button id="initBtn" class="btn">INITIALIZE SYSTEM</button>
+              </div>
+            </div>
+          </div>
+        `;
+        $('#initBtn').addEventListener('click', ()=>{
+          const v = $('#username').value.trim();
+          if(!v) return shake($('#username'));
+          state.user = { username:v, xp:0, pro:false };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
+          state.mode = 'desktop';
+          render();
+        });
+        $('#username').addEventListener('keypress', (e)=>{ if(e.key === 'Enter') $('#initBtn').click() });
+      } else if(state.mode === 'desktop'){
+        app.innerHTML = `
+          <div class="desktop">
+            <div class="workspace">
+              <div class="card center" style="flex-direction:column;display:flex;gap:10px">
+                <h1>ECLIPSE NEXUS OS</h1>
+                <div class="muted">Operator: <strong style="color:var(--primary)">${escapeHtml(state.user.username)}</strong></div>
+                <div class="muted">XP: <strong style="color:var(--primary)">${Math.floor(state.user.xp)}</strong></div>
+                <div class="muted">License: <strong style="color:var(--primary)">${state.user.pro? 'PRO' : 'FREE'}</strong></div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button id="launch" class="btn">Launch Game</button>
+                  <button id="logout" class="small-btn">Logout</button>
+                  <a id="donate" class="small-btn" target="_blank" rel="noreferrer" href="https://paystack.shop/pay/rlgb3gsjp2">Donate</a>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+                  <label style="font-size:13px;color:var(--muted)">PRO MODE</label>
+                  <input type="checkbox" id="proToggle" ${state.user.pro? 'checked' : ''} />
+                </div>
+              </div>
+              <div class="card">
+                <div style="font-size:14px;color:var(--primary);text-shadow:0 0 8px var(--primary)">System Console</div>
+                <div class="muted" style="margin-top:8px">Use the taskbar to manage apps. Launch Neon Runner to earn XP.</div>
+              </div>
+            </div>
+            <div class="taskbar">
+              <div class="task-left">
+                <div class="operator">${escapeHtml(state.user.username || 'operator')}</div>
+                <div class="xp-bubble">XP ${Math.floor(state.user.xp)}</div>
+                <div class="muted" style="margin-left:8px">${state.user.pro? 'PRO' : 'FREE'}</div>
+              </div>
+              <div class="task-right">
+                <button id="tb-launch" class="small-btn">Launch Game</button>
+                <button id="tb-logout" class="small-btn">Logout</button>
+                <button id="tb-donate" class="small-btn">Donate</button>
+              </div>
+            </div>
+            <div class="footer-note">Eclipse Nexus OS v1.0</div>
+          </div>
+        `;
 
-  user.name = name;
-  localStorage.setItem("user", JSON.stringify(user));
+        // Attach listeners
+        $('#launch').addEventListener('click', ()=>{ state.mode='game'; render(); startGame(); });
+        $('#tb-launch').addEventListener('click', ()=>{ state.mode='game'; render(); startGame(); });
+        $('#logout').addEventListener('click', ()=>{ localStorage.clear(); location.reload(); });
+        $('#tb-logout').addEventListener('click', ()=>{ localStorage.clear(); location.reload(); });
+        $('#donate').addEventListener('click', ()=>{});
+        $('#tb-donate').addEventListener('click', ()=>{ window.open('https://paystack.shop/pay/rlgb3gsjp2','_blank') });
+        $('#proToggle').addEventListener('change', (e)=>{
+          state.user.pro = !!e.target.checked;
+          if(state.user.pro) document.body.classList.add('pro-mode'); else document.body.classList.remove('pro-mode');
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
+          render();
+        });
+      } else if(state.mode === 'game'){
+        app.innerHTML = `
+          <div class="desktop">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div class="game-container">
+                <canvas id="gameCanvas" width="400" height="500"></canvas>
+                <div class="hud card">
+                  <div style="font-weight:700;color:var(--primary)">Neon Runner</div>
+                  <div style="margin-top:8px">Operator: <strong>${escapeHtml(state.user.username)}</strong></div>
+                  <div style="margin-top:8px">Score: <span id="score">0</span></div>
+                  <div style="margin-top:8px">XP: <span id="xpDisplay">${Math.floor(state.user.xp)}</span></div>
+                  <div style="margin-top:12px;display:flex;gap:8px">
+                    <button id="endBtn" class="small-btn">End Run</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="taskbar">
+              <div class="task-left">
+                <div class="operator">${escapeHtml(state.user.username)}</div>
+                <div class="xp-bubble">XP ${Math.floor(state.user.xp)}</div>
+                <div class="muted" style="margin-left:8px">${state.user.pro? 'PRO' : 'FREE'}</div>
+              </div>
+              <div class="task-right">
+                <button id="tb-exit" class="small-btn">Exit to Desktop</button>
+              </div>
+            </div>
+          </div>
+        `;
 
-  showDesktop();
-}
+        $('#endBtn').addEventListener('click', ()=>{ gameOver(); });
+        $('#tb-exit').addEventListener('click', ()=>{ gameOver(); });
 
-// SHOW DESKTOP
-function showDesktop(){
-  hideAll();
-  document.getElementById("desktop").classList.add("active");
+      }
+    }
 
-  document.getElementById("welcome").innerText =
-    "Welcome " + user.name + (user.pro ? " (PRO)" : " (FREE)");
-}
+    // Small UX helpers
+    function shake(el){ el.animate([{ transform:'translateX(-6px)'},{ transform:'translateX(6px)'},{ transform:'translateX(0)' }], { duration:320 }); }
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 
-// GAME
-function openGame(){
-  hideAll();
-  document.getElementById("game").classList.add("active");
-}
+    // --- Game Implementation ---
+    let loopId = null;
+    function startGame(){
+      // ensure mode still game
+      if(state.mode !== 'game') return;
+      const canvas = $('#gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
 
-// BACK
-function back(){
-  showDesktop();
-}
+      // Entities
+      const player = { x: W/2 - 10, y: H - 50, size:20, speed:6 };
+      let obstacles = [];
+      let score = 0;
+      let lastSpawn = 0;
+      let spawnInterval = 1200; // ms
+      let baseSpeed = 2 + (state.user.pro? 0.5 : 0);
+      let obstacleSpeed = baseSpeed;
+      let lastScoreTick = performance.now();
+      let lastFrame = performance.now();
+      let running = true;
 
-// UPGRADE (PAYSTACK)
-function upgrade(){
-  window.location.href =
-  "https://paystack.shop/pay/rlgb3gsjp2";
-}
+      // Controls
+      const keys = { left:false, right:false };
+      function onKey(e){ if(e.key === 'ArrowLeft') keys.left = e.type==='keydown'; if(e.key === 'ArrowRight') keys.right = e.type==='keydown'; }
+      window.addEventListener('keydown', onKey); window.addEventListener('keyup', onKey);
 
-</script>
+      // Touch controls
+      function onTouch(e){ e.preventDefault(); const t = e.touches[0]; const rect = canvas.getBoundingClientRect(); const x = t.clientX - rect.left; if(x < rect.width/2) keys.left = true; else keys.right = true; }
+      function onTouchEnd(e){ keys.left = false; keys.right = false; }
+      canvas.addEventListener('touchstart', onTouch, {passive:false}); canvas.addEventListener('touchend', onTouchEnd);
 
+      // Game loop
+      function spawnObstacle(){
+        const w = 40 + Math.random()*60;
+        const h = 12 + Math.random()*36;
+        const x = Math.random() * (W - w);
+        obstacles.push({ x, y:-h-10, width:w, height:h, speed:obstacleSpeed + Math.random()*1.2 });
+      }
+
+      function rectsIntersect(a,b){ return !(a.x+a.size < b.x || a.x > b.x+b.width || a.y+a.size < b.y || a.y > b.y+b.height); }
+
+      function update(dt){
+        // movement
+        if(keys.left) player.x -= player.speed;
+        if(keys.right) player.x += player.speed;
+        player.x = Math.max(0, Math.min(W - player.size, player.x));
+
+        // spawn
+        lastSpawn += dt;
+        if(lastSpawn >= spawnInterval){ lastSpawn = 0; spawnObstacle(); }
+
+        // update obstacles
+        for(let i=obstacles.length-1;i>=0;i--){
+          obstacles[i].y += obstacles[i].speed;
+          if(obstacles[i].y > H + 100) obstacles.splice(i,1);
+        }
+
+        // collisions
+        for(const ob of obstacles){
+          if(rectsIntersect(player, ob)) return false; // collision -> game over
+        }
+
+        // score tick
+        const now = performance.now();
+        if(now - lastScoreTick >= 1000){
+          score += 1;
+          document.getElementById('score').textContent = score;
+          lastScoreTick = now;
+
+          // scaling
+          if(score % 15 === 0){
+            obstacleSpeed += 0.6; spawnInterval = Math.max(350, spawnInterval - 80);
+          }
+        }
+
+        return true;
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+        // background glow
+        const g = ctx.createLinearGradient(0,0,0,H);
+        g.addColorStop(0,'rgba(0,255,255,0.02)'); g.addColorStop(1,'rgba(255,0,127,0.02)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+        // player
+        ctx.fillStyle = state.user.pro ? 'rgba(255,0,127,0.9)' : 'rgba(0,240,255,0.95)';
+        ctx.fillRect(player.x, player.y, player.size, player.size);
+        // neon outline
+        ctx.strokeStyle = state.user.pro ? '#ff66b3' : '#66f7ff'; ctx.lineWidth = 2; ctx.strokeRect(player.x-1, player.y-1, player.size+2, player.size+2);
+
+        // obstacles
+        for(const ob of obstacles){
+          ctx.fillStyle = 'rgba(255,255,255,0.06)';
+          ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
+          ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.strokeRect(ob.x, ob.y, ob.width, ob.height);
+        }
+
+        // HUD
+        ctx.fillStyle = '#99f7ff'; ctx.font = '14px "Courier New", Courier, monospace'; ctx.fillText('SCORE: ' + score, 12, 18);
+      }
+
+      function loop(now){
+        if(!running) return;
+        const dt = now - lastFrame; lastFrame = now;
+        const alive = update(dt);
+        if(!alive){ gameOver(); return; }
+        draw();
+        loopId = requestAnimationFrame(loop);
+      }
+
+      // start
+      lastFrame = performance.now(); lastScoreTick = performance.now(); loopId = requestAnimationFrame(loop);
+
+      // gameOver handler
+      function gameOver(){
+        if(!running) return;
+        running = false;
+        cancelAnimationFrame(loopId);
+        // remove listeners
+        window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey);
+        canvas.removeEventListener('touchstart', onTouch); canvas.removeEventListener('touchend', onTouchEnd);
+        // clear arrays
+        obstacles = [];
+        // calculate xp
+        const xpGain = Math.floor(score * 0.7);
+        state.user.xp = (state.user.xp || 0) + xpGain;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
+        // brief overlay then return to desktop
+        // ensure UI mode still game before switching
+        state.mode = 'desktop';
+        render();
+      }
+
+      // expose gameOver to outer scope so UI buttons can call
+      window.gameOver = gameOver;
+    }
+
+    function gameOver(){ if(window.gameOver) window.gameOver(); }
+
+    // Initial render done on DOMContentLoaded
+
+  </script>
 </body>
 </html>
