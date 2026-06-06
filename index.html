@@ -1,31 +1,134 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Eclipse Nexus OS</title>
-    <style>
-        body {
-            margin: 0;
-            background: #050816;
-            color: #00f0ff;
-            font-family: Arial;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .box {
-            text-align: center;
-        }
-        h1 {
-            text-shadow: 0 0 10px #00f0ff;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Eclipse Nexus OS</title>
+
+<style>
+body {
+  margin: 0;
+  background: #050816;
+  color: #00f0ff;
+  font-family: Arial;
+}
+
+/* Screens */
+.screen { display: none; padding: 20px; text-align: center; }
+.active { display: block; }
+
+/* Glow */
+h1 {
+  text-shadow: 0 0 10px #00f0ff;
+}
+
+/* Buttons */
+button {
+  background: #00f0ff;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+</style>
 </head>
+
 <body>
-    <div class="box">
-        <h1>ECLIPSE NEXUS OS</h1>
-        <p>Booting System...</p>
-    </div>
+
+<!-- BOOT -->
+<div id="boot" class="screen active">
+  <h1>BOOTING NEXUS OS...</h1>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="screen">
+  <h1>LOGIN</h1>
+  <input id="username" placeholder="Enter username">
+  <button onclick="login()">Enter</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="home" class="screen">
+  <h1>WELCOME TO ECLIPSE NEXUS OS</h1>
+  <p id="userInfo"></p>
+
+  <button onclick="goGame()">Game Center</button>
+  <button onclick="upgrade()">Upgrade to Pro - ₦1,000</button>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+  <h1>NEON RUNNER (BETA)</h1>
+  <p>Game coming soon...</p>
+  <button onclick="back()">Back</button>
+</div>
+
+<script>
+
+// USER SYSTEM
+let user = JSON.parse(localStorage.getItem("user")) || {
+  username: "",
+  plan: "free"
+};
+
+// BOOT SEQUENCE
+setTimeout(() => {
+  document.getElementById("boot").classList.remove("active");
+
+  if(user.username){
+    showHome();
+  } else {
+    document.getElementById("login").classList.add("active");
+  }
+}, 2000);
+
+// LOGIN
+function login(){
+  let name = document.getElementById("username").value;
+  if(!name) return;
+
+  user.username = name;
+  localStorage.setItem("user", JSON.stringify(user));
+
+  showHome();
+}
+
+// SHOW HOME
+function showHome(){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("home").classList.add("active");
+
+  document.getElementById("userInfo").innerText =
+    "User: " + user.username + " | Plan: " + user.plan;
+}
+
+// GAME
+function goGame(){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("game").classList.add("active");
+}
+
+// BACK
+function back(){
+  showHome();
+}
+
+// UPGRADE (PAYSTACK LINK)
+function upgrade(){
+  window.location.href =
+  "https://paystack.shop/pay/rlgb3gsjp2";
+}
+
+// PRO CHECK
+function checkPro(){
+  if(user.plan === "pro"){
+    document.body.style.filter = "drop-shadow(0 0 10px cyan)";
+  }
+}
+checkPro();
+
+</script>
+
 </body>
-</html>
+                                   </html>
