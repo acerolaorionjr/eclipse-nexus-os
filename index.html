@@ -40,6 +40,11 @@ button {
   cursor: pointer;
   font-weight: bold;
 }
+
+input {
+  padding: 10px;
+  margin-top: 10px;
+}
 </style>
 </head>
 
@@ -48,6 +53,7 @@ button {
 <!-- BOOT -->
 <div id="boot" class="screen active">
   <h1>BOOTING ECLIPSE NEXUS OS</h1>
+  <p>Initializing system...</p>
 </div>
 
 <!-- LOGIN -->
@@ -60,6 +66,11 @@ button {
 <!-- DESKTOP -->
 <div id="desktop" class="screen">
   <h1>ECLIPSE NEXUS DESKTOP</h1>
+
+  <div style="margin-bottom:10px;">
+    SYSTEM STATUS: ONLINE ⚡
+  </div>
+
   <p id="welcome"></p>
 
   <button onclick="openGame()">Game Center</button>
@@ -69,7 +80,7 @@ button {
 <!-- GAME -->
 <div id="game" class="screen">
   <h1>NEON RUNNER</h1>
-  <p>Coming next step...</p>
+  <p>Game coming next update...</p>
   <button onclick="back()">Back</button>
 </div>
 
@@ -77,9 +88,14 @@ button {
 
 let user = JSON.parse(localStorage.getItem("user")) || { name:"", pro:false };
 
-// BOOT SEQUENCE
+// HIDE ALL
+function hideAll(){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+}
+
+// BOOT SYSTEM
 setTimeout(() => {
-  document.getElementById("boot").classList.remove("active");
+  hideAll();
 
   if(user.name){
     showDesktop();
@@ -119,15 +135,10 @@ function back(){
   showDesktop();
 }
 
-// UPGRADE (PAYSTACK LINK)
+// UPGRADE (PAYSTACK)
 function upgrade(){
   window.location.href =
   "https://paystack.shop/pay/rlgb3gsjp2";
-}
-
-// HIDE ALL SCREENS
-function hideAll(){
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
 }
 
 </script>
