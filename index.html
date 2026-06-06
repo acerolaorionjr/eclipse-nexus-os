@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,26 +7,36 @@
 <style>
 body {
   margin: 0;
+  font-family: Arial;
   background: #050816;
   color: #00f0ff;
-  font-family: Arial;
+  overflow: hidden;
 }
 
 /* Screens */
-.screen { display: none; padding: 20px; text-align: center; }
-.active { display: block; }
+.screen {
+  display: none;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 
-/* Glow */
+.active {
+  display: flex;
+}
+
+/* Neon text */
 h1 {
-  text-shadow: 0 0 10px #00f0ff;
+  text-shadow: 0 0 15px #00f0ff;
 }
 
 /* Buttons */
 button {
   background: #00f0ff;
   border: none;
-  padding: 10px;
-  margin: 5px;
+  padding: 10px 15px;
+  margin-top: 10px;
   cursor: pointer;
   font-weight: bold;
 }
@@ -38,46 +47,42 @@ button {
 
 <!-- BOOT -->
 <div id="boot" class="screen active">
-  <h1>BOOTING NEXUS OS...</h1>
+  <h1>BOOTING ECLIPSE NEXUS OS</h1>
 </div>
 
 <!-- LOGIN -->
 <div id="login" class="screen">
   <h1>LOGIN</h1>
-  <input id="username" placeholder="Enter username">
-  <button onclick="login()">Enter</button>
+  <input id="user" placeholder="Enter username">
+  <button onclick="login()">Enter OS</button>
 </div>
 
-<!-- DASHBOARD -->
-<div id="home" class="screen">
-  <h1>WELCOME TO ECLIPSE NEXUS OS</h1>
-  <p id="userInfo"></p>
+<!-- DESKTOP -->
+<div id="desktop" class="screen">
+  <h1>ECLIPSE NEXUS DESKTOP</h1>
+  <p id="welcome"></p>
 
-  <button onclick="goGame()">Game Center</button>
-  <button onclick="upgrade()">Upgrade to Pro - ₦1,000</button>
+  <button onclick="openGame()">Game Center</button>
+  <button onclick="upgrade()">Upgrade to PRO (₦1000)</button>
 </div>
 
 <!-- GAME -->
 <div id="game" class="screen">
-  <h1>NEON RUNNER (BETA)</h1>
-  <p>Game coming soon...</p>
+  <h1>NEON RUNNER</h1>
+  <p>Coming next step...</p>
   <button onclick="back()">Back</button>
 </div>
 
 <script>
 
-// USER SYSTEM
-let user = JSON.parse(localStorage.getItem("user")) || {
-  username: "",
-  plan: "free"
-};
+let user = JSON.parse(localStorage.getItem("user")) || { name:"", pro:false };
 
 // BOOT SEQUENCE
 setTimeout(() => {
   document.getElementById("boot").classList.remove("active");
 
-  if(user.username){
-    showHome();
+  if(user.name){
+    showDesktop();
   } else {
     document.getElementById("login").classList.add("active");
   }
@@ -85,33 +90,33 @@ setTimeout(() => {
 
 // LOGIN
 function login(){
-  let name = document.getElementById("username").value;
+  let name = document.getElementById("user").value;
   if(!name) return;
 
-  user.username = name;
+  user.name = name;
   localStorage.setItem("user", JSON.stringify(user));
 
-  showHome();
+  showDesktop();
 }
 
-// SHOW HOME
-function showHome(){
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById("home").classList.add("active");
+// SHOW DESKTOP
+function showDesktop(){
+  hideAll();
+  document.getElementById("desktop").classList.add("active");
 
-  document.getElementById("userInfo").innerText =
-    "User: " + user.username + " | Plan: " + user.plan;
+  document.getElementById("welcome").innerText =
+    "Welcome " + user.name + (user.pro ? " (PRO)" : " (FREE)");
 }
 
 // GAME
-function goGame(){
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+function openGame(){
+  hideAll();
   document.getElementById("game").classList.add("active");
 }
 
 // BACK
 function back(){
-  showHome();
+  showDesktop();
 }
 
 // UPGRADE (PAYSTACK LINK)
@@ -120,15 +125,12 @@ function upgrade(){
   "https://paystack.shop/pay/rlgb3gsjp2";
 }
 
-// PRO CHECK
-function checkPro(){
-  if(user.plan === "pro"){
-    document.body.style.filter = "drop-shadow(0 0 10px cyan)";
-  }
+// HIDE ALL SCREENS
+function hideAll(){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
 }
-checkPro();
 
 </script>
 
 </body>
-                                   </html>
+</html>
