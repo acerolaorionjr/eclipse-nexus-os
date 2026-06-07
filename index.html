@@ -15,12 +15,12 @@
       --muted:#6b7686;
       --monospace: 'Courier New', Courier, monospace;
     }
-    body{ margin:0; min-height:100vh; background:linear-gradient(180deg,#040511 0%, #050816 60%); color:var(--text); font-family:var(--monospace); background-color:var(--bg); }
+    body{ margin:0; min-height:100vh; background:linear-gradient(180deg,#040511 0%, #050816 60%); color:var(--text); font-family:var(--monospace); background-color:var(--bg); overflow: hidden; }
     .pro-mode{ --primary:var(--secondary); }
 
     /* Layout */
-    .app{ display:flex; align-items:center; justify-content:center; height:100vh; }
-    .panel{ width:720px; max-width:95vw; min-height:480px; background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:20px; box-shadow:0 10px 50px rgba(0,0,0,0.6), 0 0 30px var(--primary); backdrop-filter: blur(6px); position:relative; overflow:hidden; }
+    .app{ display:flex; align-items:center; justify-content:center; height:100vh; width: 100vw; }
+    .panel{ width:720px; max-width:95vw; height: 90vh; min-height:480px; background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:20px; box-shadow:0 10px 50px rgba(0,0,0,0.6), 0 0 30px var(--primary); backdrop-filter: blur(6px); position:relative; overflow:hidden; display: flex; flex-direction: column; }
 
     h1{ margin:0; font-size:18px; letter-spacing:1px; color:var(--primary); text-shadow:0 0 12px var(--primary); }
     .muted{ color:var(--muted); font-size:12px }
@@ -40,21 +40,21 @@
     .btn:active{ transform:translateY(1px) }
 
     /* Desktop */
-    .desktop{ display:flex; flex-direction:column; height:100%; }
-    .workspace{ flex:1; display:flex; align-items:center; justify-content:center; gap:18px; }
+    .desktop{ display:flex; flex-direction:column; height:100%; width: 100%; position: relative; }
+    .workspace{ flex:1; display:flex; align-items:center; justify-content:center; gap:18px; padding-bottom: 80px; height: calc(100% - 80px); overflow-y: auto; }
     .card{ width:320px; padding:16px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.03); box-shadow:0 8px 40px rgba(0,0,0,0.6); backdrop-filter: blur(6px); }
 
     /* Taskbar */
-    .taskbar{ position:absolute; bottom:12px; left:12px; right:12px; height:64px; display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-radius:10px; background:linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 24px var(--primary); }
+    .taskbar{ position:absolute; bottom:0px; left:0px; right:0px; height:64px; display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-radius:10px; background:linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 24px var(--primary); z-index: 20; }
     .task-left{ display:flex; gap:12px; align-items:center }
-    .operator{ font-weight:700; color:var(--primary); text-shadow:0 0 10px var(--primary); }
+    .operator{ font-weight:700; color:var(--primary); text-shadow:0 0 10px var(--primary); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .xp-bubble{ background:rgba(255,255,255,0.02); padding:6px 10px; border-radius:6px; color:var(--text); border:1px solid rgba(255,255,255,0.03) }
     .task-right{ display:flex; gap:8px; align-items:center }
-    .small-btn{ padding:8px 10px; border-radius:8px; border:none; cursor:pointer; background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.04); }
+    .small-btn{ padding:8px 10px; border-radius:8px; border:none; cursor:pointer; background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.04); white-space: nowrap; }
 
-    /* Game */
-    .game-container{ display:flex; gap:12px; align-items:flex-start; }
-    canvas{ background:linear-gradient(180deg,#001 0%, #00151a 100%); border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 30px var(--primary); }
+    /* Game responsive adjustments */
+    .game-container{ display:flex; gap:12px; align-items:center; justify-content:center; width:100%; height: 100%; max-height: calc(100% - 20px); flex-wrap: wrap; }
+    canvas{ background:linear-gradient(180deg,#001 0%, #00151a 100%); border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 30px var(--primary); max-width: 100%; max-height: calc(90vh - 200px); object-fit: contain; }
     .hud{ color:var(--primary); font-size:14px }
 
     /* Utilities */
@@ -62,14 +62,24 @@
     .hidden{ display:none }
     .footer-note{ position:absolute; right:20px; bottom:18px; color:var(--muted); font-size:11px }
 
-    @media (max-width:720px){ .panel{ padding:12px } .progress{ width:80% } }
+    @media (max-width:720px){ 
+      .panel{ padding:12px; height: 95vh; } 
+      .progress{ width:80% } 
+      .workspace { flex-direction: column; gap: 12px; justify-content: flex-start; }
+      .card { width: 100%; box-sizing: border-box; }
+      .game-container { flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; }
+      /* Give the canvas much more breathing room on mobile */
+      canvas { max-height: 65vh; width: 100%; } 
+      .hud { width: 100%; box-sizing: border-box; }
+      .taskbar { height: auto; flex-direction: column; gap: 8px; padding: 10px; bottom: 0; }
+      .workspace { padding-bottom: 120px; height: calc(100% - 120px); }
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="panel" id="app">
-      <!-- app UI injected by JS -->
-    </div>
+      </div>
   </div>
   <script>
     // State machine
@@ -82,8 +92,18 @@
     const $ = (sel,root=document) => root.querySelector(sel);
     const app = $('#app');
 
-    // Storage keys
+    // Storage keys and Safe Wrappers
     const STORAGE_KEY = 'nexus_user';
+    
+    function safeGetStorage() {
+      try { return localStorage.getItem(STORAGE_KEY); } catch(e) { return null; }
+    }
+    function safeSetStorage(val) {
+      try { localStorage.setItem(STORAGE_KEY, val); } catch(e) { console.warn("Storage restricted."); }
+    }
+    function safeClearStorage() {
+      try { localStorage.clear(); } catch(e) { console.warn("Storage restricted."); }
+    }
 
     // Boot sequence
     document.addEventListener('DOMContentLoaded', ()=>{
@@ -99,29 +119,29 @@
       const fillEl = $('.progress .fill');
 
       function easeCubicBezierY(t, y1=0.0, y2=1.0){
-        // approximate cubic-bezier(0.4,0,0.2,1) using y control points
-        // control points: (0,0),(0.4,0),(0.2,1),(1,1)
-        // simple cubic bezier y(t) with given y1,y2
         const inv = 1-t;
-        return 3*inv*inv*t*0 + 3*inv*t*t*1 + t*t*t; // simplified because first cp y=0, second cp y=1
+        return 3*inv*inv*t*0 + 3*inv*t*t*1 + t*t*t;
       }
 
       function tick(now){
         const elapsed = now - start;
         let p = Math.min(1, elapsed / duration);
-        // approximate desired easing using cubic bezier sample; for our chosen control points we craft a function
-        // We'll map p through a bezier-like ease curve roughly matching cubic-bezier(0.4,0,0.2,1)
         const eased = cubicBezierEase(p);
-        fillEl.style.width = (eased*100) + '%';
+        if (fillEl) fillEl.style.width = (eased*100) + '%';
         if(elapsed < duration){
           requestAnimationFrame(tick);
         } else {
-          // after boot, check storage and route
-          const raw = localStorage.getItem(STORAGE_KEY);
+          // after boot, check storage safely and route
+          const raw = safeGetStorage();
           if(!raw){
             state.mode = 'login';
           } else {
-            try{ state.user = JSON.parse(raw) }catch(e){ localStorage.removeItem(STORAGE_KEY); state.user = {username:'',xp:0,pro:false} }
+            try { 
+                state.user = JSON.parse(raw); 
+            } catch(e) { 
+                safeClearStorage(); 
+                state.user = {username:'',xp:0,pro:false}; 
+            }
             state.mode = 'desktop';
             if(state.user.pro) document.body.classList.add('pro-mode'); else document.body.classList.remove('pro-mode');
           }
@@ -133,19 +153,14 @@
     }
 
     function cubicBezierEase(t){
-      // numeric approximation of cubic-bezier(0.4,0,0.2,1)
-      // We'll use De Casteljau's algorithm sampling y coordinate where control points are (0,0),(0.4,0),(0.2,1),(1,1)
-      // Because bezier param t maps to x unevenly, this is an approximation but suitable for smoothness requirement.
       const x1=0.4,y1=0,x2=0.2,y2=1;
-      // We'll simply compute y(t) with these control Y's
       const inv = 1-t;
-      const y = 3*inv*inv*t*y1 + 3*inv*t*t*y2 + t*t*t; // endpoints 0 and 1 yield final term
+      const y = 3*inv*inv*t*y1 + 3*inv*t*t*y2 + t*t*t; 
       return y;
     }
 
     // Render system that checks state.mode before drawing
     function render(){
-      // Always re-check mode and render appropriate UI
       app.innerHTML = '';
       if(state.mode === 'boot'){
         app.innerHTML = `
@@ -172,7 +187,7 @@
           const v = $('#username').value.trim();
           if(!v) return shake($('#username'));
           state.user = { username:v, xp:0, pro:false };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
+          safeSetStorage(JSON.stringify(state.user));
           state.mode = 'desktop';
           render();
         });
@@ -213,27 +228,25 @@
                 <button id="tb-donate" class="small-btn">Donate</button>
               </div>
             </div>
-            <div class="footer-note">Eclipse Nexus OS v1.0</div>
           </div>
         `;
 
         // Attach listeners
         $('#launch').addEventListener('click', ()=>{ state.mode='game'; render(); startGame(); });
         $('#tb-launch').addEventListener('click', ()=>{ state.mode='game'; render(); startGame(); });
-        $('#logout').addEventListener('click', ()=>{ localStorage.clear(); location.reload(); });
-        $('#tb-logout').addEventListener('click', ()=>{ localStorage.clear(); location.reload(); });
-        $('#donate').addEventListener('click', ()=>{});
+        $('#logout').addEventListener('click', ()=>{ safeClearStorage(); location.reload(); });
+        $('#tb-logout').addEventListener('click', ()=>{ safeClearStorage(); location.reload(); });
         $('#tb-donate').addEventListener('click', ()=>{ window.open('https://paystack.shop/pay/rlgb3gsjp2','_blank') });
         $('#proToggle').addEventListener('change', (e)=>{
           state.user.pro = !!e.target.checked;
           if(state.user.pro) document.body.classList.add('pro-mode'); else document.body.classList.remove('pro-mode');
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
+          safeSetStorage(JSON.stringify(state.user));
           render();
         });
       } else if(state.mode === 'game'){
         app.innerHTML = `
           <div class="desktop">
-            <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="workspace">
               <div class="game-container">
                 <canvas id="gameCanvas" width="400" height="500"></canvas>
                 <div class="hud card">
@@ -262,7 +275,6 @@
 
         $('#endBtn').addEventListener('click', ()=>{ gameOver(); });
         $('#tb-exit').addEventListener('click', ()=>{ gameOver(); });
-
       }
     }
 
@@ -273,7 +285,6 @@
     // --- Game Implementation ---
     let loopId = null;
     function startGame(){
-      // ensure mode still game
       if(state.mode !== 'game') return;
       const canvas = $('#gameCanvas');
       const ctx = canvas.getContext('2d');
@@ -297,7 +308,13 @@
       window.addEventListener('keydown', onKey); window.addEventListener('keyup', onKey);
 
       // Touch controls
-      function onTouch(e){ e.preventDefault(); const t = e.touches[0]; const rect = canvas.getBoundingClientRect(); const x = t.clientX - rect.left; if(x < rect.width/2) keys.left = true; else keys.right = true; }
+      function onTouch(e){ 
+        e.preventDefault(); 
+        const t = e.touches[0]; 
+        const rect = canvas.getBoundingClientRect(); 
+        const x = t.clientX - rect.left; 
+        if(x < rect.width/2) { keys.left = true; keys.right = false; } else { keys.right = true; keys.left = false; } 
+      }
       function onTouchEnd(e){ keys.left = false; keys.right = false; }
       canvas.addEventListener('touchstart', onTouch, {passive:false}); canvas.addEventListener('touchend', onTouchEnd);
 
@@ -312,34 +329,29 @@
       function rectsIntersect(a,b){ return !(a.x+a.size < b.x || a.x > b.x+b.width || a.y+a.size < b.y || a.y > b.y+b.height); }
 
       function update(dt){
-        // movement
         if(keys.left) player.x -= player.speed;
         if(keys.right) player.x += player.speed;
         player.x = Math.max(0, Math.min(W - player.size, player.x));
 
-        // spawn
         lastSpawn += dt;
         if(lastSpawn >= spawnInterval){ lastSpawn = 0; spawnObstacle(); }
 
-        // update obstacles
         for(let i=obstacles.length-1;i>=0;i--){
           obstacles[i].y += obstacles[i].speed;
           if(obstacles[i].y > H + 100) obstacles.splice(i,1);
         }
 
-        // collisions
         for(const ob of obstacles){
-          if(rectsIntersect(player, ob)) return false; // collision -> game over
+          if(rectsIntersect(player, ob)) return false; 
         }
 
-        // score tick
         const now = performance.now();
         if(now - lastScoreTick >= 1000){
           score += 1;
-          document.getElementById('score').textContent = score;
+          const scoreEl = document.getElementById('score');
+          if (scoreEl) scoreEl.textContent = score;
           lastScoreTick = now;
 
-          // scaling
           if(score % 15 === 0){
             obstacleSpeed += 0.6; spawnInterval = Math.max(350, spawnInterval - 80);
           }
@@ -350,25 +362,20 @@
 
       function draw(){
         ctx.clearRect(0,0,W,H);
-        // background glow
         const g = ctx.createLinearGradient(0,0,0,H);
         g.addColorStop(0,'rgba(0,255,255,0.02)'); g.addColorStop(1,'rgba(255,0,127,0.02)');
         ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
 
-        // player
         ctx.fillStyle = state.user.pro ? 'rgba(255,0,127,0.9)' : 'rgba(0,240,255,0.95)';
         ctx.fillRect(player.x, player.y, player.size, player.size);
-        // neon outline
         ctx.strokeStyle = state.user.pro ? '#ff66b3' : '#66f7ff'; ctx.lineWidth = 2; ctx.strokeRect(player.x-1, player.y-1, player.size+2, player.size+2);
 
-        // obstacles
         for(const ob of obstacles){
           ctx.fillStyle = 'rgba(255,255,255,0.06)';
           ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
           ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.strokeRect(ob.x, ob.y, ob.width, ob.height);
         }
 
-        // HUD
         ctx.fillStyle = '#99f7ff'; ctx.font = '14px "Courier New", Courier, monospace'; ctx.fillText('SCORE: ' + score, 12, 18);
       }
 
@@ -381,37 +388,26 @@
         loopId = requestAnimationFrame(loop);
       }
 
-      // start
       lastFrame = performance.now(); lastScoreTick = performance.now(); loopId = requestAnimationFrame(loop);
 
-      // gameOver handler
       function gameOver(){
         if(!running) return;
         running = false;
         cancelAnimationFrame(loopId);
-        // remove listeners
         window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey);
         canvas.removeEventListener('touchstart', onTouch); canvas.removeEventListener('touchend', onTouchEnd);
-        // clear arrays
         obstacles = [];
-        // calculate xp
         const xpGain = Math.floor(score * 0.7);
         state.user.xp = (state.user.xp || 0) + xpGain;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
-        // brief overlay then return to desktop
-        // ensure UI mode still game before switching
+        safeSetStorage(JSON.stringify(state.user));
         state.mode = 'desktop';
         render();
       }
 
-      // expose gameOver to outer scope so UI buttons can call
       window.gameOver = gameOver;
     }
 
     function gameOver(){ if(window.gameOver) window.gameOver(); }
-
-    // Initial render done on DOMContentLoaded
-
   </script>
 </body>
-</html>
+  </html>
